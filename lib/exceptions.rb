@@ -1,4 +1,4 @@
 class InvalidValueError < StandardError; end
-class InvalidNumberError < StandardError; end
-class StackOutOfBoundError < StandardError; end
-class EmptyDataStack < RuntimeError; end
+class InvalidNumberError < InvalidValueError; end
+class StackOutOfBoundError < InvalidValueError; end
+class EmptyDataStackError < RuntimeError; end
