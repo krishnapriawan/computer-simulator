@@ -16,11 +16,13 @@ class Computer
   end
 
   def set_address(addr)
+    validate_address(addr)
     @current_pointer = addr
     self
   end
 
   def insert(argc, argv = nil)
+    validate_insert(argc, argv)
     value_param = " #{argv}" unless argv.nil?
     @pc_stack[@current_pointer] = "#{argc}#{value_param}"
     @current_pointer += 1
@@ -41,10 +43,12 @@ class Computer
         push(pop * pop)
       when 'CALL'
         pc = instructions[1].to_i
+        validate_address(pc)
         # puts "CALL pc: #{pc}"
         next
       when 'RET'
         pc = pop
+        validate_address(pc)
         # puts "RET pc: #{pc}"
         next
       end
@@ -52,6 +56,13 @@ class Computer
     end
   end
 
+  def size
+    @pc_stack.length
+  end
+
+  def print_stack
+    @pc_stack.to_s
+  end
 
   private
 
@@ -67,10 +78,48 @@ class Computer
 
   def pop
     num = @pc_stack[@stack_pointer - 1]
+    validate_data_stack(num)
     # puts "POP stack_pointer: #{stack_pointer}, num: #{num}"
     @pc_stack[@stack_pointer - 1] = nil
     @stack_pointer -= 1
     num
   end
 
+  def validate_address(addr)
+    case addr
+    when String
+      raise InvalidValueError, 'Argument value for address should be a number'
+    when -Float::INFINITY..-1
+      raise InvalidNumberError, 'Argument value for address should be a positive number'
+    when @pc_stack.length..Float::INFINITY
+      raise StackOutOfBoundError, 'Address out of bounds'
+    end
+    begin
+      Integer(addr)
+    rescue
+      raise InvalidValueError, 'Argument value for address should be a number'
+    end
+  end
+
+  def validate_insert(argc, argv)
+    case argc
+    when 'PUSH'
+      raise InvalidValueError, 'Missing argument value in PUSH command' if argv.nil?
+      raise InvalidValueError, 'Argument value in PUSH command should be a number' unless argv.is_a? Numeric
+    when 'CALL'
+      raise InvalidValueError, 'Missing argument value in CALL command' if argv.nil?
+      raise InvalidValueError, 'Argument value in CALL command should be a number' unless argv.is_a? Numeric
+    else
+      raise InvalidValueError, "Unknown insert command: #{argc}" unless %w[MULT PUSH CALL PRINT RET STOP].include? argc
+    end
+    raise InvalidValueError, 'Failed to insert. Address out of bounds' if @current_pointer >= @pc_stack.length
+  end
+
+  def validate_data_stack(data)
+    begin
+      Integer(data)
+    rescue
+      raise EmptyDataStack, 'Unable to pop data in empty stack'
+    end
+  end
 end
