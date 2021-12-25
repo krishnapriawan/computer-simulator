@@ -75,13 +75,14 @@ class Computer
 
   def pop
     num = @pc_stack[@stack_pointer - 1]
-    validate_data_stack(num)
+    validate_integer_data(num, EmptyDataStackError.new('Unable to pop data in empty stack'))
     @pc_stack[@stack_pointer - 1] = nil
     @stack_pointer -= 1
     num
   end
 
   def validate_address(addr)
+    validate_integer_data(addr, InvalidValueError.new('Argument value for address should be a number'))
     case addr
     when String
       raise InvalidValueError.new('Argument value for address should be a number')
@@ -90,32 +91,27 @@ class Computer
     when @pc_stack.length..Float::INFINITY
       raise StackOutOfBoundError.new('Address out of bounds')
     end
-    begin
-      Integer(addr)
-    rescue
-      raise InvalidValueError.new('Argument value for address should be a number')
-    end
   end
 
   def validate_insert(argc, argv)
     case argc
     when 'PUSH'
       raise InvalidValueError.new('Missing argument value in PUSH command') if argv.nil?
-      raise InvalidValueError.new('Argument value in PUSH command should be a number') unless argv.is_a? Numeric
+      raise InvalidValueError.new('Argument value in PUSH command should be a number') unless argv.is_a? Integer
     when 'CALL'
       raise InvalidValueError.new('Missing argument value in CALL command') if argv.nil?
-      raise InvalidValueError.new('Argument value in CALL command should be a number') unless argv.is_a? Numeric
+      raise InvalidValueError.new('Argument value in CALL command should be a number') unless argv.is_a? Integer
     else
       raise InvalidValueError.new("Unknown insert command: #{argc}") unless %w[MULT PUSH CALL PRINT RET STOP].include? argc
     end
     raise InvalidValueError.new('Failed to insert. Address out of bounds') if @current_pointer >= @pc_stack.length
   end
 
-  def validate_data_stack(data)
+  def validate_integer_data(data, exception)
     begin
       Integer(data)
     rescue
-      raise EmptyDataStackError.new('Unable to pop data in empty stack')
+      raise exception
     end
   end
 end
