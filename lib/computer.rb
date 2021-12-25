@@ -88,38 +88,38 @@ class Computer
   def validate_address(addr)
     case addr
     when String
-      raise InvalidValueError, 'Argument value for address should be a number'
+      raise InvalidValueError.new('Argument value for address should be a number')
     when -Float::INFINITY..-1
-      raise InvalidNumberError, 'Argument value for address should be a positive number'
+      raise InvalidNumberError.new('Argument value for address should be a positive number')
     when @pc_stack.length..Float::INFINITY
-      raise StackOutOfBoundError, 'Address out of bounds'
+      raise StackOutOfBoundError.new('Address out of bounds')
     end
     begin
       Integer(addr)
     rescue
-      raise InvalidValueError, 'Argument value for address should be a number'
+      raise InvalidValueError.new('Argument value for address should be a number')
     end
   end
 
   def validate_insert(argc, argv)
     case argc
     when 'PUSH'
-      raise InvalidValueError, 'Missing argument value in PUSH command' if argv.nil?
-      raise InvalidValueError, 'Argument value in PUSH command should be a number' unless argv.is_a? Numeric
+      raise InvalidValueError.new('Missing argument value in PUSH command') if argv.nil?
+      raise InvalidValueError.new('Argument value in PUSH command should be a number') unless argv.is_a? Numeric
     when 'CALL'
-      raise InvalidValueError, 'Missing argument value in CALL command' if argv.nil?
-      raise InvalidValueError, 'Argument value in CALL command should be a number' unless argv.is_a? Numeric
+      raise InvalidValueError.new('Missing argument value in CALL command') if argv.nil?
+      raise InvalidValueError.new('Argument value in CALL command should be a number') unless argv.is_a? Numeric
     else
-      raise InvalidValueError, "Unknown insert command: #{argc}" unless %w[MULT PUSH CALL PRINT RET STOP].include? argc
+      raise InvalidValueError.new("Unknown insert command: #{argc}") unless %w[MULT PUSH CALL PRINT RET STOP].include? argc
     end
-    raise InvalidValueError, 'Failed to insert. Address out of bounds' if @current_pointer >= @pc_stack.length
+    raise InvalidValueError.new('Failed to insert. Address out of bounds') if @current_pointer >= @pc_stack.length
   end
 
   def validate_data_stack(data)
     begin
       Integer(data)
     rescue
-      raise EmptyDataStack, 'Unable to pop data in empty stack'
+      raise EmptyDataStackError.new('Unable to pop data in empty stack')
     end
   end
 end

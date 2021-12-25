@@ -96,7 +96,7 @@ describe Computer do
       computer = Computer.new(3)
 
       computer.set_address(0).insert('PUSH', 10).insert('PRINT').insert('PRINT')
-      expect { computer.set_address(0).execute }.to raise_error EmptyDataStack
+      expect { computer.set_address(0).execute }.to raise_error EmptyDataStackError
     end
   end
 end
