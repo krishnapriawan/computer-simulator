@@ -44,12 +44,10 @@ class Computer
       when 'CALL'
         pc = instructions[1].to_i
         validate_address(pc)
-        # puts "CALL pc: #{pc}"
         next
       when 'RET'
         pc = pop
         validate_address(pc)
-        # puts "RET pc: #{pc}"
         next
       end
       pc += 1
@@ -71,7 +69,6 @@ class Computer
   end
 
   def push(n)
-    # puts "PUSH stack_pointer: #{@stack_pointer}, n: #{n.to_i}"
     @pc_stack[@stack_pointer] = n.to_i
     @stack_pointer += 1
   end
@@ -79,7 +76,6 @@ class Computer
   def pop
     num = @pc_stack[@stack_pointer - 1]
     validate_data_stack(num)
-    # puts "POP stack_pointer: #{stack_pointer}, num: #{num}"
     @pc_stack[@stack_pointer - 1] = nil
     @stack_pointer -= 1
     num
