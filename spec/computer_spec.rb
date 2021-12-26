@@ -89,14 +89,47 @@ describe Computer do
       computer.insert('PUSH', 6)
       computer.insert('PUSH', 101).insert('PUSH', 10).insert('CALL', PRINT_TENTEN_BEGIN)
       computer.insert('STOP')
+
+      expect(computer.stack_pointer()).to eql(53)
+      expect(computer.current_pointer()).to eql(7)
       expect { computer.set_address(MAIN_BEGIN).execute }.to output("1009\n1010\n").to_stdout
     end
 
     it 'should raise an error when data stack is empty' do
       computer = Computer.new(3)
 
-      computer.set_address(0).insert('PUSH', 10).insert('PRINT').insert('PRINT')
+      computer.set_address(0).insert('PUSH', 2).insert('RET').insert('PRINT')
       expect { computer.set_address(0).execute }.to raise_error EmptyDataStackError
+    end
+
+    it 'should terminate when data in address is nil' do
+      computer = Computer.new(20)
+
+      computer.set_address(0).insert('PUSH', 10).insert('PRINT')
+      computer.set_address(0).insert('PUSH', 20).insert('CALL', 15)
+
+      expect { computer.set_address(0).execute }.to output("").to_stdout
+    end
+
+    it 'should raise an error when empty stack' do
+      computer = Computer.new(1)
+      computer.insert('PRINT')
+
+      expect { computer.set_address(0).execute }.to raise_error EmptyDataStackError
+    end
+
+    it 'should raise an error when execution starts at out of bound address' do
+      computer = Computer.new(1)
+      computer.insert('PRINT')
+
+      expect { computer.execute }.to raise_error StackOutOfBoundError
+    end
+
+    it 'should raise an error for infinite loop / cyclic instructions' do
+      computer = Computer.new(2)
+      computer.insert('PUSH', 0).insert('RET')
+
+      expect { computer.set_address(0).execute }.to raise_error InfiniteExecutionError
     end
   end
 end

@@ -1,4 +1,5 @@
 require 'exceptions'
+require 'set'
 
 class Computer
 
@@ -17,7 +18,7 @@ class Computer
 
   def set_address(addr)
     validate_address(addr)
-    @current_pointer = addr
+    @current_pointer = addr.to_i
     self
   end
 
@@ -32,7 +33,10 @@ class Computer
 
   def execute
     pc = @current_pointer
+    validate_address(pc)
+    executed_addr = Set.new
     while has_data?(@pc_stack[pc])
+      validate_executed_pc_address(pc, executed_addr)
       instructions = @pc_stack[pc].split(' ')
       case instructions[0]
       when 'PRINT'
@@ -76,9 +80,13 @@ class Computer
   def pop
     num = @pc_stack[@stack_pointer - 1]
     validate_integer_data(num, EmptyDataStackError.new('Unable to pop data in empty stack'))
-    @pc_stack[@stack_pointer - 1] = nil
-    @stack_pointer -= 1
+    @pc_stack[@stack_pointer -= 1] = nil
     num
+  end
+
+  def validate_executed_pc_address(addr, executed_addr)
+    raise InfiniteExecutionError.new('Infinite loop of executions are detected') if executed_addr.include?(addr)
+    executed_addr << addr
   end
 
   def validate_address(addr)
