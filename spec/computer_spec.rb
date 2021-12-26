@@ -90,8 +90,8 @@ describe Computer do
       computer.insert('PUSH', 101).insert('PUSH', 10).insert('CALL', PRINT_TENTEN_BEGIN)
       computer.insert('STOP')
 
-      expect(computer.stack_pointer()).to eql(53)
-      expect(computer.current_pointer()).to eql(7)
+      expect(computer.stack_pointer).to eql(53)
+      expect(computer.current_pointer).to eql(7)
       expect { computer.set_address(MAIN_BEGIN).execute }.to output("1009\n1010\n").to_stdout
     end
 
@@ -108,7 +108,7 @@ describe Computer do
       computer.set_address(0).insert('PUSH', 10).insert('PRINT')
       computer.set_address(0).insert('PUSH', 20).insert('CALL', 15)
 
-      expect { computer.set_address(0).execute }.to output("").to_stdout
+      expect { computer.set_address(0).execute }.to output('').to_stdout
     end
 
     it 'should raise an error when empty stack' do

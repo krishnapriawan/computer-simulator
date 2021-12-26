@@ -2,7 +2,6 @@ require 'exceptions'
 require 'set'
 
 class Computer
-
   attr_reader :stack_pointer
   attr_reader :current_pointer
 
@@ -85,7 +84,7 @@ class Computer
   end
 
   def validate_executed_pc_address(addr, executed_addr)
-    raise InfiniteExecutionError.new('Infinite loop of executions are detected') if executed_addr.include?(addr)
+    raise InfiniteExecutionError, 'Infinite loop of executions are detected' if executed_addr.include?(addr)
     executed_addr << addr
   end
 
@@ -93,33 +92,31 @@ class Computer
     validate_integer_data(addr, InvalidValueError.new('Argument value for address should be a number'))
     case addr
     when String
-      raise InvalidValueError.new('Argument value for address should be a number')
+      raise InvalidValueError, 'Argument value for address should be a number'
     when -Float::INFINITY..-1
-      raise InvalidNumberError.new('Argument value for address should be a positive number')
+      raise InvalidNumberError, 'Argument value for address should be a positive number'
     when @pc_stack.length..Float::INFINITY
-      raise StackOutOfBoundError.new('Address out of bounds')
+      raise StackOutOfBoundError, 'Address out of bounds'
     end
   end
 
   def validate_insert(argc, argv)
     case argc
     when 'PUSH'
-      raise InvalidValueError.new('Missing argument value in PUSH command') if argv.nil?
-      raise InvalidValueError.new('Argument value in PUSH command should be a number') unless argv.is_a? Integer
+      raise InvalidValueError, 'Missing argument value in PUSH command' if argv.nil?
+      raise InvalidValueError, 'Argument value in PUSH command should be a number' unless argv.is_a? Integer
     when 'CALL'
-      raise InvalidValueError.new('Missing argument value in CALL command') if argv.nil?
-      raise InvalidValueError.new('Argument value in CALL command should be a number') unless argv.is_a? Integer
+      raise InvalidValueError, 'Missing argument value in CALL command' if argv.nil?
+      raise InvalidValueError, 'Argument value in CALL command should be a number' unless argv.is_a? Integer
     else
-      raise InvalidValueError.new("Unknown insert command: #{argc}") unless %w[MULT PUSH CALL PRINT RET STOP].include? argc
+      raise InvalidValueError, "Unknown insert command: #{argc}" unless %w[MULT PUSH CALL PRINT RET STOP].include? argc
     end
-    raise InvalidValueError.new('Failed to insert. Address out of bounds') if @current_pointer >= @pc_stack.length
+    raise InvalidValueError, 'Failed to insert. Address out of bounds' if @current_pointer >= @pc_stack.length
   end
 
   def validate_integer_data(data, exception)
-    begin
-      Integer(data)
-    rescue
-      raise exception
-    end
+    Integer(data)
+  rescue
+    raise exception
   end
 end
