@@ -1,7 +1,7 @@
 # Computer Simulator
 This project is to demonstrate how computer executes set of instructions with program counter (PC) and instruction register
 
-## Prequisities
+## Prerequisites
 - Ruby 
 - Bundler `>= 1.16.6`
 
